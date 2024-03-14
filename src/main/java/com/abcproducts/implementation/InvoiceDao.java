@@ -1,5 +1,10 @@
 package com.abcproducts.implementation;
 
-public interface InvoiceDao {
+import java.util.List;
 
+import com.abcproducts.model.Invoice;
+
+public interface InvoiceDao {
+	
+	List<Invoice> getAllInvoices(Integer start, Integer limit);
 }
