@@ -12,6 +12,10 @@ import com.abcproducts.model.Invoice;
 public class InvoiceDaoImpl implements InvoiceDao {
 
 	private static final String SELECT_ALL_INVOICES = "SELECT * FROM h2h_oap LIMIT ?,?";
+	private static final String MAX_SERIAL_NUMBER = "SELECT MAX(Sl_no) AS MaxSerialNumber FROM h2h_oap";
+	private static final String INSERT_INVOICE = "INSERT INTO h2h_oap"
+			+ "(Sl_NO, CUSTOMER_ORDER_ID, SALES_ORG, DISTRIBUTION_CHANNEL, COMPANY_CODE,ORDER_CREATION_DATE, ORDER_CURRENCY, CUSTOMER_NUMBER, AMOUNT_IN_USD, ORDER_AMOUNT)"
+			+ "VALUES (?,?,?,?,?,?,?,?,?,?)";
 
 	private DatabaseConnection databaseConnection;
 
@@ -50,6 +54,39 @@ public class InvoiceDaoImpl implements InvoiceDao {
 		}
 
 		return invoices;
+	}
+
+	@Override
+	public void insertInvoice(Invoice invoice) {
+		
+		try (Connection connection = databaseConnection.getConnection()) {
+			Integer nextSerialNumber;
+			PreparedStatement getNextSerialNumberPreparedStatement = connection.prepareStatement(MAX_SERIAL_NUMBER);
+			ResultSet resultSet = getNextSerialNumberPreparedStatement.executeQuery();
+			while (resultSet.next()) {
+				Integer maxSerialNumber = resultSet.getInt("MaxSerialNumber");
+				nextSerialNumber = maxSerialNumber + 1;
+				invoice.setSlNo(nextSerialNumber);
+			}
+			
+			PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INVOICE);
+			preparedStatement.setInt(1, invoice.getSlNo());
+			preparedStatement.setInt(2, invoice.getCustomerOrderId());
+			preparedStatement.setInt(3, invoice.getSalesOrg());
+			preparedStatement.setString(4, invoice.getDistributionChannel());
+			preparedStatement.setInt(5, invoice.getCompanyCode());
+			preparedStatement.setString(6, invoice.getOrderCreationDate());
+			preparedStatement.setString(7, invoice.getOrderCurrency());
+			preparedStatement.setInt(8, invoice.getCustomerNumber());
+			preparedStatement.setDouble(9, invoice.getAmountInUsd());
+			preparedStatement.setDouble(10, 0);
+			preparedStatement.executeUpdate();
+			
+			preparedStatement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }
