@@ -3,6 +3,7 @@ package com.abcproducts.servlets;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,7 +21,7 @@ public class DataLoadingServlet extends HttpServlet {
 
 	private InvoiceDao invoiceDao;
 
-	public void init() {
+	public void init(ServletConfig config) throws ServletException {
 		invoiceDao = new InvoiceDaoImpl();
 	}
 
