@@ -17,6 +17,7 @@ public class InvoiceDaoImpl implements InvoiceDao {
 			+ "(Sl_NO, CUSTOMER_ORDER_ID, SALES_ORG, DISTRIBUTION_CHANNEL, COMPANY_CODE,ORDER_CREATION_DATE, ORDER_CURRENCY, CUSTOMER_NUMBER, AMOUNT_IN_USD, ORDER_AMOUNT)"
 			+ "VALUES (?,?,?,?,?,?,?,?,?,?)";
 	private static final String UPDATE_INVOICE = "UPDATE h2h_oap SET ORDER_CURRENCY = ?, COMPANY_CODE = ?, DISTRIBUTION_CHANNEL = ? WHERE CUSTOMER_ORDER_ID = ?";
+	private static final String DELETE_INVOICE = "DELETE FROM h2h_oap WHERE CUSTOMER_ORDER_ID = ?";
 
 	private DatabaseConnection databaseConnection;
 
@@ -67,7 +68,6 @@ public class InvoiceDaoImpl implements InvoiceDao {
 				nextSerialNumber = maxSerialNumber + 1;
 				invoice.setSlNo(nextSerialNumber);
 			}
-
 			PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INVOICE);
 			preparedStatement.setInt(1, invoice.getSlNo());
 			preparedStatement.setInt(2, invoice.getCustomerOrderId());
@@ -80,7 +80,6 @@ public class InvoiceDaoImpl implements InvoiceDao {
 			preparedStatement.setDouble(9, invoice.getAmountInUsd());
 			preparedStatement.setDouble(10, 0);
 			preparedStatement.executeUpdate();
-
 			preparedStatement.close();
 			connection.close();
 		} catch (Exception e) {
@@ -90,14 +89,26 @@ public class InvoiceDaoImpl implements InvoiceDao {
 
 	@Override
 	public void updateInvoice(Integer customerOrderId, Invoice invoice) {
-		try(Connection connection = databaseConnection.getConnection()) {
+		try (Connection connection = databaseConnection.getConnection()) {
 			PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_INVOICE);
 			preparedStatement.setString(1, invoice.getOrderCurrency());
 			preparedStatement.setInt(2, invoice.getCompanyCode());
 			preparedStatement.setString(3, invoice.getDistributionChannel());
 			preparedStatement.setInt(4, customerOrderId);
 			preparedStatement.executeUpdate();
-			
+			preparedStatement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void deleteInvoice(Integer customerOrderId) {
+		try (Connection connection = databaseConnection.getConnection()) {
+			PreparedStatement preparedStatement = connection.prepareStatement(DELETE_INVOICE);
+			preparedStatement.setInt(1, customerOrderId);
+			preparedStatement.executeUpdate();
 			preparedStatement.close();
 			connection.close();
 		} catch (Exception e) {
