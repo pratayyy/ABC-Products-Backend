@@ -38,10 +38,10 @@ public class AddServlet extends HttpServlet {
 		response.addHeader("Access-Control-Max-Age", "1728000");
 
 		Gson gson = new Gson();
-		BufferedReader reader = request.getReader();
-		Invoice invoice = gson.fromJson(reader, Invoice.class);
 
 		try {
+			BufferedReader reader = request.getReader();
+			Invoice invoice = gson.fromJson(reader, Invoice.class);
 			invoiceDao.insertInvoice(invoice);
 		} catch (Exception e) {
 			e.printStackTrace();
