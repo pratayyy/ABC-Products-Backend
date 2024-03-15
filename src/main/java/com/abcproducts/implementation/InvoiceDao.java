@@ -7,6 +7,8 @@ import com.abcproducts.model.Invoice;
 public interface InvoiceDao {
 
 	List<Invoice> getAllInvoices(Integer start, Integer limit);
+	
+	List<Invoice> getSearchedInvoices(Integer customerOrderId);
 
 	void insertInvoice(Invoice invoice);
 

@@ -12,6 +12,7 @@ import com.abcproducts.model.Invoice;
 public class InvoiceDaoImpl implements InvoiceDao {
 
 	private static final String SELECT_ALL_INVOICES = "SELECT * FROM h2h_oap LIMIT ?,?";
+	private static final String SELECT_SEARCHED_INVOICE = "SELECT * FROM h2h_oap WHERE CUSTOMER_ORDER_ID = ?";
 	private static final String MAX_SERIAL_NUMBER = "SELECT MAX(Sl_no) AS MaxSerialNumber FROM h2h_oap";
 	private static final String INSERT_INVOICE = "INSERT INTO h2h_oap"
 			+ "(Sl_NO, CUSTOMER_ORDER_ID, SALES_ORG, DISTRIBUTION_CHANNEL, COMPANY_CODE,ORDER_CREATION_DATE, ORDER_CURRENCY, CUSTOMER_NUMBER, AMOUNT_IN_USD, ORDER_AMOUNT)"
@@ -28,7 +29,6 @@ public class InvoiceDaoImpl implements InvoiceDao {
 	@Override
 	public List<Invoice> getAllInvoices(Integer start, Integer limit) {
 		List<Invoice> invoices = new ArrayList<>();
-
 		try (Connection connection = databaseConnection.getConnection()) {
 			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_INVOICES);
 			preparedStatement.setInt(1, start);
@@ -53,7 +53,35 @@ public class InvoiceDaoImpl implements InvoiceDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return invoices;
+	}
 
+	@Override
+	public List<Invoice> getSearchedInvoices(Integer customerOrderId) {
+		List<Invoice> invoices = new ArrayList<>();
+		try (Connection connection = databaseConnection.getConnection()) {
+			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SEARCHED_INVOICE);
+			preparedStatement.setInt(1, customerOrderId);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while(resultSet.next()) {
+				Invoice invoice = new Invoice();
+				invoice.setSlNo(resultSet.getInt("Sl_no"));
+				invoice.setCustomerOrderId(resultSet.getInt("CUSTOMER_ORDER_ID"));
+				invoice.setSalesOrg(resultSet.getInt("SALES_ORG"));
+				invoice.setDistributionChannel(resultSet.getString("DISTRIBUTION_CHANNEL"));
+				invoice.setCompanyCode(resultSet.getInt("COMPANY_CODE"));
+				invoice.setOrderCreationDate(resultSet.getString("ORDER_CREATION_DATE"));
+				invoice.setOrderCurrency(resultSet.getString("COMPANY_CODE"));
+				invoice.setCustomerNumber(resultSet.getInt("CUSTOMER_NUMBER"));
+				invoice.setAmountInUsd(resultSet.getDouble("AMOUNT_IN_USD"));
+				invoice.setOrderAmount(resultSet.getDouble("ORDER_AMOUNT"));
+				invoices.add(invoice);
+			}
+			preparedStatement.close();
+			connection.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return invoices;
 	}
 
