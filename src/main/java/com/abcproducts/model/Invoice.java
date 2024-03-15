@@ -1,36 +1,61 @@
 package com.abcproducts.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Invoice {
+	@SerializedName("Sl_no")
 	private Integer slNo;
+
+	@SerializedName("CUSTOMER_ORDER_ID")
 	private Integer customerOrderId;
+
+	@SerializedName("SALES_ORG")
 	private Integer salesOrg;
+
+	@SerializedName("DISTRIBUTION_CHANNEL")
 	private String distributionChannel;
+
+	@SerializedName("DIVISION")
+	private String division;
+
+	@SerializedName("RELEASED_CREDIT_VALUE")
+	private Double releasedCreditValue;
+
+	@SerializedName("PURCHASE_ORDER_TYPE")
+	private Integer purchaseOrderType;
+
+	@SerializedName("COMPANY_CODE")
 	private Integer companyCode;
+
+	@SerializedName("ORDER_CREATION_DATE")
 	private String orderCreationDate;
-	private String orderCurrency;
-	private Integer customerNumber;
-	private Double amountInUsd;
+
+	@SerializedName("ORDER_CREATION_TIME")
+	private String orderCreationTime;
+
+	@SerializedName("CREDIT_CONTROL_AREA")
+	private String creditControlArea;
+
+	@SerializedName("SOLD_TO_PARTY")
+	private Integer soldToParty;
+
+	@SerializedName("ORDER_AMOUNT")
 	private Double orderAmount;
 
-	public Invoice() {
-		super();
-	}
+	@SerializedName("REQUESTED_DELIVERY_DATE")
+	private String requestedDeliveryDate;
 
-	public Invoice(Integer slNo, Integer customerOrderId, Integer salesOrg, String distributionChannel,
-			Integer companyCode, String orderCreationDate, String orderCurrency, Integer customerNumber,
-			Double amountInUsd, Double orderAmount) {
-		super();
-		this.slNo = slNo;
-		this.customerOrderId = customerOrderId;
-		this.salesOrg = salesOrg;
-		this.distributionChannel = distributionChannel;
-		this.companyCode = companyCode;
-		this.orderCreationDate = orderCreationDate;
-		this.orderCurrency = orderCurrency;
-		this.customerNumber = customerNumber;
-		this.amountInUsd = amountInUsd;
-		this.orderAmount = orderAmount;
-	}
+	@SerializedName("ORDER_CURRENCY")
+	private String orderCurrency;
+
+	@SerializedName("CREDIT_STATUS")
+	private String creditStatus;
+
+	@SerializedName("CUSTOMER_NUMBER")
+	private Integer customerNumber;
+
+	@SerializedName("AMOUNT_IN_USD")
+	private Double amountInUsd;
 
 	public Integer getSlNo() {
 		return slNo;
@@ -64,6 +89,30 @@ public class Invoice {
 		this.distributionChannel = distributionChannel;
 	}
 
+	public String getDivision() {
+		return division;
+	}
+
+	public void setDivision(String division) {
+		this.division = division;
+	}
+
+	public Double getReleasedCreditValue() {
+		return releasedCreditValue;
+	}
+
+	public void setReleasedCreditValue(Double releasedCreditValue) {
+		this.releasedCreditValue = releasedCreditValue;
+	}
+
+	public Integer getPurchaseOrderType() {
+		return purchaseOrderType;
+	}
+
+	public void setPurchaseOrderType(Integer purchaseOrderType) {
+		this.purchaseOrderType = purchaseOrderType;
+	}
+
 	public Integer getCompanyCode() {
 		return companyCode;
 	}
@@ -80,12 +129,60 @@ public class Invoice {
 		this.orderCreationDate = orderCreationDate;
 	}
 
+	public String getOrderCreationTime() {
+		return orderCreationTime;
+	}
+
+	public void setOrderCreationTime(String orderCreationTime) {
+		this.orderCreationTime = orderCreationTime;
+	}
+
+	public String getCreditControlArea() {
+		return creditControlArea;
+	}
+
+	public void setCreditControlArea(String creditControlArea) {
+		this.creditControlArea = creditControlArea;
+	}
+
+	public Integer getSoldToParty() {
+		return soldToParty;
+	}
+
+	public void setSoldToParty(Integer soldToParty) {
+		this.soldToParty = soldToParty;
+	}
+
+	public Double getOrderAmount() {
+		return orderAmount;
+	}
+
+	public void setOrderAmount(Double orderAmount) {
+		this.orderAmount = orderAmount;
+	}
+
+	public String getRequestedDeliveryDate() {
+		return requestedDeliveryDate;
+	}
+
+	public void setRequestedDeliveryDate(String requestedDeliveryDate) {
+		this.requestedDeliveryDate = requestedDeliveryDate;
+	}
+
 	public String getOrderCurrency() {
 		return orderCurrency;
 	}
 
 	public void setOrderCurrency(String orderCurrency) {
 		this.orderCurrency = orderCurrency;
+	}
+
+	public String getCreditStatus() {
+		return creditStatus;
+	}
+
+	public void setCreditStatus(String creditStatus) {
+		this.creditStatus = creditStatus;
 	}
 
 	public Integer getCustomerNumber() {
@@ -104,20 +201,47 @@ public class Invoice {
 		this.amountInUsd = amountInUsd;
 	}
 
-	public Double getOrderAmount() {
-		return orderAmount;
+	public Invoice() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
-	public void setOrderAmount(Double orderAmount) {
+	public Invoice(Integer slNo, Integer customerOrderId, Integer salesOrg, String distributionChannel, String division,
+			Double releasedCreditValue, Integer purchaseOrderType, Integer companyCode, String orderCreationDate,
+			String orderCreationTime, String creditControlArea, Integer soldToParty, Double orderAmount,
+			String requestedDeliveryDate, String orderCurrency, String creditStatus, Integer customerNumber,
+			Double amountInUsd) {
+		super();
+		this.slNo = slNo;
+		this.customerOrderId = customerOrderId;
+		this.salesOrg = salesOrg;
+		this.distributionChannel = distributionChannel;
+		this.division = division;
+		this.releasedCreditValue = releasedCreditValue;
+		this.purchaseOrderType = purchaseOrderType;
+		this.companyCode = companyCode;
+		this.orderCreationDate = orderCreationDate;
+		this.orderCreationTime = orderCreationTime;
+		this.creditControlArea = creditControlArea;
+		this.soldToParty = soldToParty;
 		this.orderAmount = orderAmount;
+		this.requestedDeliveryDate = requestedDeliveryDate;
+		this.orderCurrency = orderCurrency;
+		this.creditStatus = creditStatus;
+		this.customerNumber = customerNumber;
+		this.amountInUsd = amountInUsd;
 	}
 
 	@Override
 	public String toString() {
 		return "Invoice [slNo=" + slNo + ", customerOrderId=" + customerOrderId + ", salesOrg=" + salesOrg
-				+ ", distributionChannel=" + distributionChannel + ", companyCode=" + companyCode
-				+ ", orderCreationDate=" + orderCreationDate + ", orderCurrency=" + orderCurrency + ", customerNumber="
-				+ customerNumber + ", amountInUsd=" + amountInUsd + ", orderAmount=" + orderAmount + "]";
+				+ ", distributionChannel=" + distributionChannel + ", division=" + division + ", releasedCreditValue="
+				+ releasedCreditValue + ", purchaseOrderType=" + purchaseOrderType + ", companyCode=" + companyCode
+				+ ", orderCreationDate=" + orderCreationDate + ", orderCreationTime=" + orderCreationTime
+				+ ", creditControlArea=" + creditControlArea + ", soldToParty=" + soldToParty + ", orderAmount="
+				+ orderAmount + ", requestedDeliveryDate=" + requestedDeliveryDate + ", orderCurrency=" + orderCurrency
+				+ ", creditStatus=" + creditStatus + ", customerNumber=" + customerNumber + ", amountInUsd="
+				+ amountInUsd + "]";
 	}
 
 }
