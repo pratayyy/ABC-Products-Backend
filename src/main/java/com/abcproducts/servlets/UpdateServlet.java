@@ -38,11 +38,12 @@ public class UpdateServlet extends HttpServlet {
 		response.addHeader("Access-Control-Max-Age", "1728000");
 
 		Gson gson = new Gson();
+		Integer customerOrderId = Integer.parseInt(request.getParameter("id"));
 
 		try {
 			BufferedReader reader = request.getReader();
 			Invoice invoice = gson.fromJson(reader, Invoice.class);
-			invoiceDao.updateInvoice(invoice.getCustomerOrderId(), invoice);
+			invoiceDao.updateInvoice(customerOrderId, invoice);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
