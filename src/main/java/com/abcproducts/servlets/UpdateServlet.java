@@ -18,26 +18,28 @@ import com.google.gson.Gson;
 @WebServlet("/UpdateServlet")
 public class UpdateServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
- 
+
 	private InvoiceDao invoiceDao;
-	
-    public UpdateServlet() {
-        super();
-    }
+
+	public UpdateServlet() {
+		super();
+	}
 
 	public void init(ServletConfig config) throws ServletException {
 		invoiceDao = new InvoiceDaoImpl();
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		response.addHeader("Access-Control-Allow-Origin", "*");
-	    response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
-	    response.addHeader("Access-Control-Allow-Headers", "X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
-	    response.addHeader("Access-Control-Max-Age", "1728000");
-	    
-	    Gson gson = new Gson();
-	    
-	    try {
+		response.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE, HEAD");
+		response.addHeader("Access-Control-Allow-Headers",
+				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
+		response.addHeader("Access-Control-Max-Age", "1728000");
+
+		Gson gson = new Gson();
+
+		try {
 			BufferedReader reader = request.getReader();
 			Invoice invoice = gson.fromJson(reader, Invoice.class);
 			invoiceDao.updateInvoice(invoice.getCustomerOrderId(), invoice);
