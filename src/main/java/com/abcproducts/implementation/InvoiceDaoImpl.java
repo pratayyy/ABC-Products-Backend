@@ -10,7 +10,6 @@ import com.abcproducts.connection.DatabaseConnection;
 import com.abcproducts.model.Invoice;
 
 public class InvoiceDaoImpl implements InvoiceDao {
-
 	private static final String SELECT_ALL_INVOICES = "SELECT * FROM h2h_oap LIMIT ?,?";
 	private static final String SELECT_SEARCHED_INVOICE = "SELECT * FROM h2h_oap WHERE CUSTOMER_ORDER_ID = ?";
 	private static final String MAX_SERIAL_NUMBER = "SELECT MAX(Sl_no) AS MaxSerialNumber FROM h2h_oap";
@@ -20,36 +19,33 @@ public class InvoiceDaoImpl implements InvoiceDao {
 	private static final String UPDATE_INVOICE = "UPDATE h2h_oap SET ORDER_CURRENCY = ?, COMPANY_CODE = ?, DISTRIBUTION_CHANNEL = ? WHERE CUSTOMER_ORDER_ID = ?";
 	private static final String DELETE_INVOICE = "DELETE FROM h2h_oap WHERE CUSTOMER_ORDER_ID = ?";
 
-	private DatabaseConnection databaseConnection;
+	private DatabaseConnection dbConn;
 
 	public InvoiceDaoImpl() {
-		databaseConnection = new DatabaseConnection();
+		dbConn = new DatabaseConnection();
 	}
 
 	@Override
 	public List<Invoice> getAllInvoices(Integer start, Integer limit) {
 		List<Invoice> invoices = new ArrayList<>();
-		try (Connection connection = databaseConnection.getConnection()) {
-			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_ALL_INVOICES);
-			preparedStatement.setInt(1, start);
-			preparedStatement.setInt(2, limit);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Invoice invoice = new Invoice();
-				invoice.setSlNo(resultSet.getInt("Sl_no"));
-				invoice.setCustomerOrderId(resultSet.getInt("CUSTOMER_ORDER_ID"));
-				invoice.setSalesOrg(resultSet.getInt("SALES_ORG"));
-				invoice.setDistributionChannel(resultSet.getString("DISTRIBUTION_CHANNEL"));
-				invoice.setCompanyCode(resultSet.getInt("COMPANY_CODE"));
-				invoice.setOrderCreationDate(resultSet.getString("ORDER_CREATION_DATE"));
-				invoice.setOrderCurrency(resultSet.getString("COMPANY_CODE"));
-				invoice.setCustomerNumber(resultSet.getInt("CUSTOMER_NUMBER"));
-				invoice.setAmountInUsd(resultSet.getDouble("AMOUNT_IN_USD"));
-				invoice.setOrderAmount(resultSet.getDouble("ORDER_AMOUNT"));
+		try (Connection conn = dbConn.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_INVOICES);
+			stmt.setInt(1, start);
+			stmt.setInt(2, limit);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				Invoice invoice = new Invoice(rs.getInt("Sl_no"), rs.getInt("CUSTOMER_ORDER_ID"),
+						rs.getInt("SALES_ORG"), rs.getString("DISTRIBUTION_CHANNEL"), rs.getString("DIVISION"),
+						rs.getDouble("RELEASED_CREDIT_VALUE"), rs.getString("PURCHASE_ORDER_TYPE"),
+						rs.getInt("COMPANY_CODE"), rs.getString("ORDER_CREATION_DATE"),
+						rs.getString("ORDER_CREATION_TIME"), rs.getString("CREDIT_CONTROL_AREA"),
+						rs.getInt("SOLD_TO_PARTY"), rs.getDouble("ORDER_AMOUNT"),
+						rs.getString("REQUESTED_DELIVERY_DATE"), rs.getString("ORDER_CURRENCY"),
+						rs.getString("CREDIT_STATUS"), rs.getInt("CUSTOMER_NUMBER"), rs.getDouble("AMOUNT_IN_USD"));
 				invoices.add(invoice);
 			}
-			preparedStatement.close();
-			connection.close();
+			stmt.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,26 +55,23 @@ public class InvoiceDaoImpl implements InvoiceDao {
 	@Override
 	public List<Invoice> getSearchedInvoices(Integer customerOrderId) {
 		List<Invoice> invoices = new ArrayList<>();
-		try (Connection connection = databaseConnection.getConnection()) {
-			PreparedStatement preparedStatement = connection.prepareStatement(SELECT_SEARCHED_INVOICE);
-			preparedStatement.setInt(1, customerOrderId);
-			ResultSet resultSet = preparedStatement.executeQuery();
-			while(resultSet.next()) {
-				Invoice invoice = new Invoice();
-				invoice.setSlNo(resultSet.getInt("Sl_no"));
-				invoice.setCustomerOrderId(resultSet.getInt("CUSTOMER_ORDER_ID"));
-				invoice.setSalesOrg(resultSet.getInt("SALES_ORG"));
-				invoice.setDistributionChannel(resultSet.getString("DISTRIBUTION_CHANNEL"));
-				invoice.setCompanyCode(resultSet.getInt("COMPANY_CODE"));
-				invoice.setOrderCreationDate(resultSet.getString("ORDER_CREATION_DATE"));
-				invoice.setOrderCurrency(resultSet.getString("COMPANY_CODE"));
-				invoice.setCustomerNumber(resultSet.getInt("CUSTOMER_NUMBER"));
-				invoice.setAmountInUsd(resultSet.getDouble("AMOUNT_IN_USD"));
-				invoice.setOrderAmount(resultSet.getDouble("ORDER_AMOUNT"));
+		try (Connection conn = dbConn.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(SELECT_SEARCHED_INVOICE);
+			stmt.setInt(1, customerOrderId);
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				Invoice invoice = new Invoice(rs.getInt("Sl_no"), rs.getInt("CUSTOMER_ORDER_ID"),
+						rs.getInt("SALES_ORG"), rs.getString("DISTRIBUTION_CHANNEL"), rs.getString("DIVISION"),
+						rs.getDouble("RELEASED_CREDIT_VALUE"), rs.getString("PURCHASE_ORDER_TYPE"),
+						rs.getInt("COMPANY_CODE"), rs.getString("ORDER_CREATION_DATE"),
+						rs.getString("ORDER_CREATION_TIME"), rs.getString("CREDIT_CONTROL_AREA"),
+						rs.getInt("SOLD_TO_PARTY"), rs.getDouble("ORDER_AMOUNT"),
+						rs.getString("REQUESTED_DELIVERY_DATE"), rs.getString("ORDER_CURRENCY"),
+						rs.getString("CREDIT_STATUS"), rs.getInt("CUSTOMER_NUMBER"), rs.getDouble("AMOUNT_IN_USD"));
 				invoices.add(invoice);
 			}
-			preparedStatement.close();
-			connection.close();
+			stmt.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,29 +80,29 @@ public class InvoiceDaoImpl implements InvoiceDao {
 
 	@Override
 	public void insertInvoice(Invoice invoice) {
-		try (Connection connection = databaseConnection.getConnection()) {
+		try (Connection conn = dbConn.getConnection()) {
 			Integer nextSerialNumber;
-			PreparedStatement getNextSerialNumberPreparedStatement = connection.prepareStatement(MAX_SERIAL_NUMBER);
-			ResultSet resultSet = getNextSerialNumberPreparedStatement.executeQuery();
-			while (resultSet.next()) {
-				Integer maxSerialNumber = resultSet.getInt("MaxSerialNumber");
+			PreparedStatement getNextSerialNumberPreparedStatement = conn.prepareStatement(MAX_SERIAL_NUMBER);
+			ResultSet rs = getNextSerialNumberPreparedStatement.executeQuery();
+			while (rs.next()) {
+				Integer maxSerialNumber = rs.getInt("MaxSerialNumber");
 				nextSerialNumber = maxSerialNumber + 1;
 				invoice.setSlNo(nextSerialNumber);
 			}
-			PreparedStatement preparedStatement = connection.prepareStatement(INSERT_INVOICE);
-			preparedStatement.setInt(1, invoice.getSlNo());
-			preparedStatement.setInt(2, invoice.getCustomerOrderId());
-			preparedStatement.setInt(3, invoice.getSalesOrg());
-			preparedStatement.setString(4, invoice.getDistributionChannel());
-			preparedStatement.setInt(5, invoice.getCompanyCode());
-			preparedStatement.setString(6, invoice.getOrderCreationDate());
-			preparedStatement.setString(7, invoice.getOrderCurrency());
-			preparedStatement.setInt(8, invoice.getCustomerNumber());
-			preparedStatement.setDouble(9, invoice.getAmountInUsd());
-			preparedStatement.setDouble(10, 0);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			connection.close();
+			PreparedStatement stmt = conn.prepareStatement(INSERT_INVOICE);
+			stmt.setInt(1, invoice.getSlNo());
+			stmt.setInt(2, invoice.getCustomerOrderId());
+			stmt.setInt(3, invoice.getSalesOrg());
+			stmt.setString(4, invoice.getDistributionChannel());
+			stmt.setInt(5, invoice.getCompanyCode());
+			stmt.setString(6, invoice.getOrderCreationDate());
+			stmt.setString(7, invoice.getOrderCurrency());
+			stmt.setInt(8, invoice.getCustomerNumber());
+			stmt.setDouble(9, invoice.getAmountInUsd());
+			stmt.setDouble(10, 0);
+			stmt.executeUpdate();
+			stmt.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -117,15 +110,15 @@ public class InvoiceDaoImpl implements InvoiceDao {
 
 	@Override
 	public void updateInvoice(Integer customerOrderId, Invoice invoice) {
-		try (Connection connection = databaseConnection.getConnection()) {
-			PreparedStatement preparedStatement = connection.prepareStatement(UPDATE_INVOICE);
-			preparedStatement.setString(1, invoice.getOrderCurrency());
-			preparedStatement.setInt(2, invoice.getCompanyCode());
-			preparedStatement.setString(3, invoice.getDistributionChannel());
-			preparedStatement.setInt(4, customerOrderId);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			connection.close();
+		try (Connection conn = dbConn.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(UPDATE_INVOICE);
+			stmt.setString(1, invoice.getOrderCurrency());
+			stmt.setInt(2, invoice.getCompanyCode());
+			stmt.setString(3, invoice.getDistributionChannel());
+			stmt.setInt(4, customerOrderId);
+			stmt.executeUpdate();
+			stmt.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -133,12 +126,12 @@ public class InvoiceDaoImpl implements InvoiceDao {
 
 	@Override
 	public void deleteInvoice(Integer customerOrderId) {
-		try (Connection connection = databaseConnection.getConnection()) {
-			PreparedStatement preparedStatement = connection.prepareStatement(DELETE_INVOICE);
-			preparedStatement.setInt(1, customerOrderId);
-			preparedStatement.executeUpdate();
-			preparedStatement.close();
-			connection.close();
+		try (Connection conn = dbConn.getConnection()) {
+			PreparedStatement stmt = conn.prepareStatement(DELETE_INVOICE);
+			stmt.setInt(1, customerOrderId);
+			stmt.executeUpdate();
+			stmt.close();
+			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

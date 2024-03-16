@@ -22,7 +22,7 @@ public class Invoice {
 	private Double releasedCreditValue;
 
 	@SerializedName("PURCHASE_ORDER_TYPE")
-	private Integer purchaseOrderType;
+	private String purchaseOrderType;
 
 	@SerializedName("COMPANY_CODE")
 	private Integer companyCode;
@@ -105,11 +105,11 @@ public class Invoice {
 		this.releasedCreditValue = releasedCreditValue;
 	}
 
-	public Integer getPurchaseOrderType() {
+	public String getPurchaseOrderType() {
 		return purchaseOrderType;
 	}
 
-	public void setPurchaseOrderType(Integer purchaseOrderType) {
+	public void setPurchaseOrderType(String purchaseOrderType) {
 		this.purchaseOrderType = purchaseOrderType;
 	}
 
@@ -207,7 +207,7 @@ public class Invoice {
 	}
 
 	public Invoice(Integer slNo, Integer customerOrderId, Integer salesOrg, String distributionChannel, String division,
-			Double releasedCreditValue, Integer purchaseOrderType, Integer companyCode, String orderCreationDate,
+			Double releasedCreditValue, String purchaseOrderType, Integer companyCode, String orderCreationDate,
 			String orderCreationTime, String creditControlArea, Integer soldToParty, Double orderAmount,
 			String requestedDeliveryDate, String orderCurrency, String creditStatus, Integer customerNumber,
 			Double amountInUsd) {
