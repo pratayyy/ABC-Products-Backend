@@ -14,8 +14,9 @@ import com.abcproducts.implementation.InvoiceDao;
 import com.abcproducts.implementation.InvoiceDaoImpl;
 import com.abcproducts.model.Invoice;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-@WebServlet("/DataLoadingServlet")
+@WebServlet("/invoices/get")
 public class DataLoadingServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -37,17 +38,21 @@ public class DataLoadingServlet extends HttpServlet {
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
 		response.addHeader("Access-Control-Max-Age", "1728000");
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+
+		Gson gson = new Gson();
+		JsonObject jsonResponse = new JsonObject();
 
 		Integer start = Integer.parseInt(request.getParameter("start"));
 		Integer limit = Integer.parseInt(request.getParameter("limit"));
 
-		Gson gson = new Gson();
-
 		try {
 			List<Invoice> invoices = invoiceDao.getAllInvoices(start, limit);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			response.getWriter().write(gson.toJson(invoices));
+			response.setStatus(HttpServletResponse.SC_OK);
+			jsonResponse.addProperty("status", "success");
+			jsonResponse.add("invoices", gson.toJsonTree(invoices));
+			response.getWriter().write(gson.toJson(jsonResponse));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

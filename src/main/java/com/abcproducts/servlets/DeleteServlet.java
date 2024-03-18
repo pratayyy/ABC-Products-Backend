@@ -11,8 +11,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.abcproducts.implementation.InvoiceDao;
 import com.abcproducts.implementation.InvoiceDaoImpl;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-@WebServlet("/DeleteServlet")
+@WebServlet("/invoices/delete")
 public class DeleteServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -33,11 +35,24 @@ public class DeleteServlet extends HttpServlet {
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
 		response.addHeader("Access-Control-Max-Age", "1728000");
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+
+		Gson gson = new Gson();
+		JsonObject jsonResponse = new JsonObject();
 
 		Integer customerOrderId = Integer.parseInt(request.getParameter("id"));
 
 		try {
-			invoiceDao.deleteInvoice(customerOrderId);
+			if (invoiceDao.getSearchedInvoices(customerOrderId).isEmpty()) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				jsonResponse.addProperty("status", "failed");
+				jsonResponse.addProperty("message", "No invoice found for the given id");
+				response.getWriter().write(gson.toJson(jsonResponse));
+			} else {
+				invoiceDao.deleteInvoice(customerOrderId);
+				response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -14,8 +14,9 @@ import com.abcproducts.implementation.InvoiceDao;
 import com.abcproducts.implementation.InvoiceDaoImpl;
 import com.abcproducts.model.Invoice;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
-@WebServlet("/SearchServlet")
+@WebServlet("/invoices/search")
 public class SearchServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -36,15 +37,26 @@ public class SearchServlet extends HttpServlet {
 		response.addHeader("Access-Control-Allow-Headers",
 				"X-PINGOTHER, Origin, X-Requested-With, Content-Type, Accept");
 		response.addHeader("Access-Control-Max-Age", "1728000");
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
 
 		Gson gson = new Gson();
-		int customerOrderId = Integer.parseInt(request.getParameter("id"));
+		JsonObject jsonResponse = new JsonObject();
+
+		Integer customerOrderId = Integer.parseInt(request.getParameter("id"));
 
 		try {
 			List<Invoice> invoices = invoiceDao.getSearchedInvoices(customerOrderId);
-			response.setContentType("application/json");
-			response.setCharacterEncoding("UTF-8");
-			response.getWriter().write(gson.toJson(invoices));
+			if (invoices.isEmpty()) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				jsonResponse.addProperty("status", "failed");
+				jsonResponse.addProperty("message", "No invoice found for the given id");
+			} else {
+				response.setStatus(HttpServletResponse.SC_OK);
+				jsonResponse.addProperty("status", "success");
+				jsonResponse.add("invoices", gson.toJsonTree(invoices));
+			}
+			response.getWriter().write(gson.toJson(jsonResponse));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
